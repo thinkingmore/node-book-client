@@ -1,94 +1,50 @@
+"use client"
 import Image from 'next/image'
 import styles from './page.module.css'
+import useSWR from 'swr'
 
 export default function Home() {
+  const fetcher = (...args) => 
+    fetch(...args)
+    .then(res => res.json());
+
+  const { data, error, isLoading } = useSWR('http://localhost:5000/api/v1/books', fetcher)
+
+  console.log(data?.data?.books)
+  const handleSort = (e) => {
+    const sortOrder = e.target.value;
+    console.log(sortOrder);
+  }
   return (
     <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.js</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+      <div className={styles.container}>
+        <div className={styles.bookItems}>
+          {data?.data?.books.map(book=>(
+              <div key={book._ids}  className={styles.bookCard}>
+                <div className={styles.bookCard__image}>
+                  <img className={styles.img} src={book.image}  alt="book" />
+                </div>
+                <div className={styles.bookCard__content}>
+                  <h3>{book.title}</h3>
+                  <p>By {book.author}</p>
+                  <p><b>Category: </b>{book.genre}</p>
+                  <p><b>Published in: </b>{book.published}</p>
+                  <p><b>Rating</b> {book.rating}</p>
+                </div>
+              </div>
+          ))}
         </div>
-      </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore the Next.js 13 playground.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
+        <div className={styles.sidebar}>
+          <div className={styles.sidebarItems}>
+            <form onChange={handleSort} className={styles.sortForm}>
+              <label htmlFor="books">Sort by:</label>
+                <select id="books" name="cars">
+                  <option value="Old">Old</option>
+                  <option value="New">New</option>
+                </select>
+            </form>
+          </div>
+        </div>
       </div>
     </main>
   )
