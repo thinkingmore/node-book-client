@@ -2,21 +2,18 @@
 import React, { useState } from 'react';
 import styles from './navbar.module.css'; 
 import Image from 'next/image';
+import { useSearch } from '../../context/search/SearchContext';
+
 
 const Navbar = () => {
-  const [searchQuery, setSearchQuery] = useState('');
+  const { handleSearch } = useSearch();
 
-  const handleSearchChange = (event) => {
-    setSearchQuery(event.target.value);
-  };
-
-  const handleSearchSubmit = (event) => {
-    event.preventDefault();
-    // Handle search functionality here
-    console.log('Search submitted:', searchQuery);
-    setSearchQuery('');
-  };
-
+  const setSearchQuery = (e) => {
+    const searchBar = document.getElementById("searchBar")
+    e.preventDefault()
+    const searchQuery = searchBar.value;
+    handleSearch(searchQuery);
+  }
   return (
     <nav className={styles.header}>
         <div className={styles.navbar}>
@@ -24,13 +21,11 @@ const Navbar = () => {
               Book Review
             </div>
             <div className={styles.navbarRight}>
-            <form>
-              <input className={styles.input} type="text" name="search" placeholder="Search.."/>
-              <button type="submit" className={styles.searchButton}>
+              <input onChange={setSearchQuery} className={styles.input} type="text" id="searchBar" name="search" placeholder="Search.."/>
+              <button onClick={setSearchQuery} type="submit" className={styles.searchButton}>
                 Search
               </button>
-            </form>
-            <button className={styles.loginButton}>
+            <button type="submit" className={styles.loginButton}>
               Login
             </button>
             </div>

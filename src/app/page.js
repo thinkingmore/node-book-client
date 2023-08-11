@@ -5,6 +5,7 @@ import useSWR from 'swr'
 import Pagination from '@/components/Pagination/Pagination';
 import { useState } from 'react';
 import Genre from '@/components/Genre/Genre';
+import { useSearch } from '@/context/search/SearchContext';
 
 const fetcher = async (urls) => {
   const responses = await Promise.all(urls.map(url => fetch(url)));
@@ -16,10 +17,11 @@ export default function Home () {
   const [ currentPage, setCurrentPage ] = useState("")
   const [ sortOrder, setSortOrder ] = useState({sortBy:"rating",sortValue:"desc",})
   const [ filterGenres, setFilterGenres] = useState([])
-  
+  const { searchText } = useSearch();
 
   const genresUrl = `${process.env.NEXT_PUBLIC_API_URL}/genres`;
-  const booksUrl = `${process.env.NEXT_PUBLIC_API_URL}/books?page=${currentPage}&sort=${sortOrder.sortBy},${sortOrder.sortValue}&genre=${filterGenres}`;
+  const booksUrl = `${process.env.NEXT_PUBLIC_API_URL}/books?page=${currentPage}&
+  sort=${sortOrder.sortBy},${sortOrder.sortValue}&genre=${filterGenres}&search=${searchText}`;
 
   // Fetch data from multiple endpoints using fetcher with Promise.all and SWR
   const { data, error } = useSWR([genresUrl, booksUrl], fetcher);
