@@ -32,7 +32,7 @@
   width: 90%;
   padding: 20px;
   display: flex;
-  justify-content: start;
+  justify-content: flex-start;
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
   gap: 30px;
   margin: 10px;
@@ -51,6 +51,16 @@
 .bookCard__content {
   line-height: 2rem;
 }
+
+.sortItems {
+  margin-top: 20px;
+  display: flex;
+}
+
+.sortForm label {
+  font-weight: 600;
+}
+
 .sortForm select {
   margin: 5px;
   outline:none;
@@ -60,6 +70,22 @@
 .sortForm button {
   padding: 2px 8px;
 }
+
+.categoryItems {
+  margin-top: 50px;
+}
+
+.categoryItems p {
+  text-align: center;
+  font-weight: 600;
+}
+
+.categoryListItems {
+  margin-top: 20px;
+  list-style: none;
+  line-height: 25px;
+}
+
 
 .pageItems {
   margin: 0 auto;

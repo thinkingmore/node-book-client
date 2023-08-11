@@ -4,24 +4,28 @@ import styles from './page.module.css'
 import useSWR from 'swr'
 import Pagination from '@/components/Pagination/Pagination';
 import { useState } from 'react';
+import Genre from '@/components/Genre/Genre';
 
-export default function Home() {
+const fetcher = async (urls) => {
+  const responses = await Promise.all(urls.map(url => fetch(url)));
+  const data = await Promise.all(responses.map(response => response.json()));
+  return data;
+};
+
+export default function Home () {
   const [ currentPage, setCurrentPage ] = useState("")
-  const [ sortOrder, setSortOrder ] = useState(
-    {
-      sortBy:"rating",
-      sortValue:"desc",
-    }
-  )
+  const [ sortOrder, setSortOrder ] = useState({sortBy:"rating",sortValue:"desc",})
+  const [ filterGenres, setFilterGenres] = useState([])
+  
 
-  const fetcher = (...args) => 
-    fetch(...args)
-    .then(res => res.json());
+  const genresUrl = `${process.env.NEXT_PUBLIC_API_URL}/genres`;
+  const booksUrl = `${process.env.NEXT_PUBLIC_API_URL}/books?page=${currentPage}&sort=${sortOrder.sortBy},${sortOrder.sortValue}&genre=${filterGenres}`;
 
-  const { data, error, isLoading } = useSWR(`http://localhost:5000/api/v1/books?page=${currentPage}&sort=${sortOrder.sortBy},${sortOrder.sortValue}`, fetcher)
+  // Fetch data from multiple endpoints using fetcher with Promise.all and SWR
+  const { data, error } = useSWR([genresUrl, booksUrl], fetcher);
 
-  console.log(data?.data)
 
+  // handle pagination,sort and filter
   const handlePagination = (page) => {
     setCurrentPage(page);
   }
@@ -37,12 +41,13 @@ export default function Home() {
       ...sortOrder,sortValue:event.target.value
     });
   };
-  console.log(sortOrder)
+
+ 
   return (
     <main className={styles.main}>
       <div className={styles.container}>
         <div className={styles.bookItems}>
-          {data?.data?.books.map(book=>(
+          { data && data[1].data?.books.map(book=>(
               <div key={book._id}  className={styles.bookCard}>
                 <div className={styles.bookCard__image}>
                   <Image width={200} height={313} className={styles.img} src={book.image}  alt="book" />
@@ -67,20 +72,36 @@ export default function Home() {
         </div>
         <div className={styles.sidebar}>
           <div className={styles.sidebarItems}>
-            <form onChange={handleSortBy} className={styles.sortForm}>
-              <label htmlFor="books">Sort by:</label>
-                <select id="books">
-                  <option value="rating">Rating</option>
-                  <option value="year">Year</option>
-                </select>
-            </form>
-            <form  name="order" onChange={handleSortOrder} className={styles.sortForm}>
-              <label htmlFor="books">Order by:</label>
-                <select id="books">
-                  <option value="desc">High</option>
-                  <option value="asc">Low</option>
-                </select>
-            </form>
+            <div className={styles.sortItems}>
+              <form onChange={handleSortBy} name="sort" className={styles.sortForm}>
+                <label htmlFor="books">Sort by:</label>
+                  <select id="books">
+                    <option value="rating">Rating</option>
+                    <option value="year">Year</option>
+                  </select>
+              </form>
+              <form onChange={handleSortOrder} name="order" className={styles.sortForm}>
+                <label htmlFor="books">Order by:</label>
+                  <select id="books">
+                    <option value="desc">High</option>
+                    <option value="asc">Low</option>
+                  </select>
+              </form>
+            </div>
+          </div>
+          <div className={styles.sidebarItems}>
+            <div className={styles.categoryItems}>
+              <p>Filter by category</p>
+                <ul className={styles.categoryListItems}>
+                  {data &&
+                  <Genre
+                    filterGenres={filterGenres} 
+                    genres={data[0]?.data}
+                    setFilterGenres={(genre) => setFilterGenres(genre)}
+                    />
+                  }  
+                </ul>
+            </div>
           </div>
         </div>
       </div>

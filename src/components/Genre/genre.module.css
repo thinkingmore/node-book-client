@@ -1,0 +1,18 @@
+.categoryList span {
+    margin-left: 5px;
+    font-size: 14px;
+    font-weight: 400;
+  }
+
+.submitButton  {
+  width: 200px;
+  padding: 8px 10px;
+  background-color: #131921;
+  color: #fff;
+  border:none;
+  outline: none;
+  border-radius: 5px;
+  margin-top: 20px;
+  cursor: pointer;
+
+}
