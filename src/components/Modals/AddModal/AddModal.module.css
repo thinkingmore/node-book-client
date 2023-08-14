@@ -1,0 +1,108 @@
+.container {
+    text-align: center;
+    margin-top: 50px;
+  }
+  
+.openButton {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.modal {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.modalContent {
+    background-color: white;
+    width: 400px;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
+.formContainer {
+    display: block;
+}
+  
+.formGroup {
+    display: block;
+    margin-bottom: 10px;
+}
+
+  
+.formControl {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 95%;
+    outline: none;
+}
+
+.buttonContainer {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 10px; /* Add some spacing between the inputs and buttons */
+}
+
+.updateButton,
+.closeButton {
+    flex-grow: 1; /* Equal width for both buttons */
+    padding: 10px;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+  
+
+.updateButton {
+    background-color: #31a3c8;
+}
+
+.closeButton {
+    background-color: #dc3545;
+}  
+.selectField {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 100%;
+    font-size: 14px;
+    outline:none;
+    margin-bottom: 10px;
+}
+
+
+.categorySelect {
+    display: block;
+    text-align: left;
+}
+
+.categorySelect p {
+    margin: 10px auto;
+    color: #808080;
+    font-size: 12px;
+}
+
+
+
+
+  
+
+
