@@ -1,39 +1,46 @@
 import { useState } from 'react';
 import styles from './EditModal.module.css'; 
+import validateForm from '@/utils/formValidator';
 
-function EditModal({ isOpen, onClose }) {
-  const [formData, setFormData] = useState({
-    title: '',
-    author: '',
-    category: '',
-    published: '',
-    rating: 1,
-  });
+function EditModal({ isOpen, onClose, genres, book }) {
+  const [errors, setErrors] = useState({});
+  const baseUrl = `${process.env.NEXT_PUBLIC_API_URL}/books`;
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      [name]: value,
-    }));
-  };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const body = {
+      title: e.target[0].value,
+      author: e.target[1].value,
+      genre: e.target[2].value,
+      published: e.target[3].value,
+      rating: e.target[4].value
+    }
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
+    // pass the updated data to form validator and send update request 
+    const validationErrors = validateForm(body);
+    if (Object.keys(validationErrors).length === 0) {
+      try {
+        const response = await fetch(`${baseUrl}/${book._id}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(body),
+        });
 
-    // Perform update logic with formData (e.g., update database or UI)
-
-    // Clear form fields
-    setFormData({
-      title: '',
-      author: '',
-      category: '',
-      published: '',
-      rating: 1,
-    });
-
-    // Close the modal
-    onClose();
+        if (response.ok) {
+          console.log('Book data updated successfully');
+          onClose(); 
+        } else {
+          console.error('Failed to update book data');
+        }
+      } catch (error) {
+        console.error('Error occurred during API request:', error);
+      }
+    } else {
+      setErrors(validationErrors);
+      console.log('Form validation errors:', validationErrors);
+    }
   };
 
   return (
@@ -41,85 +48,63 @@ function EditModal({ isOpen, onClose }) {
       {isOpen && (
         <div className={styles.modal}>
           <div className={styles.modalContent}>
-            {/* <form id="modalEditForm" className={styles.formContainer}>
+            <form onSubmit={handleSubmit} id="modalEditForm" className={styles.formContainer}>
                 <div className={styles.formGroup}>
-                    <input type="text" id="title" name="title" className={styles.formControl} placeholder="Title" required/>
-                </div>
-                <div className={styles.formGroup}>
-                    <input type="text" id="category" name="category" className={styles.formControl} placeholder="Category" required/>
-                </div>
-                <div className={styles.formGroup}>
-                    <input type="text" id="author" name="author" className={styles.formControl} placeholder="Author" required/>
-                </div>
-                <div className={styles.formGroup}>
-                    <input type="date" id="published" name="published" className={styles.formControl} required/>
+                  <input
+                    type="text"
+                    id="title"
+                    name="title"
+                    className={styles.formControl}
+                    placeholder="Title"
+                    defaultValue={book.title}
+                  />
                 </div>
                 <div className={styles.formGroup}>
-                    <input type="number" id="rating" name="rating" className={styles.formControl} min="1" max="5" placeholder="Rating" required/>
+                  <input
+                    type="text"
+                    id="author"
+                    name="author"
+                    className={styles.formControl}
+                    placeholder="Author"
+                    defaultValue={book.author}
+                  />
                 </div>
-                <div className={styles.buttonContainer}>             
-                        <button className={styles.updateButton}>Update</button>
-                        <button className={styles.closeButton} onClick={onClose}>Close</button>
+                <div className={styles.categorySelect}>
+                  <p>Choose a category</p>
+                  <select defaultValue={book.genre} name="genre" className={styles.selectField}>
+                    { 
+                      genres.map((gen,i)=>
+                      <option key={i}>{gen}</option>
+                    )}
+                  </select>
                 </div>
-            </form> */}
-            <form id="modalEditForm" className={styles.formContainer}>
-            <div className={styles.formGroup}>
-                <input
-                  type="text"
-                  id="title"
-                  name="title"
-                  className={styles.formControl}
-                  placeholder="Title"
-                  required
-                />
-              </div>
-              <div className={styles.formGroup}>
-                <input
-                  type="text"
-                  id="author"
-                  name="author"
-                  className={styles.formControl}
-                  placeholder="Author"
-                  required
-                />
-              </div>
-              <div className={styles.formGroup}>
-                <input
-                  type="text"
-                  id="category"
-                  name="category"
-                  className={styles.formControl}
-                  placeholder="Category"
-                  required
-                />
-              </div>
-              <div className={styles.formGroup}>
-                <input
-                  type="text"
-                  id="yearofPub"
-                  name="yearofPub"
-                  className={styles.formControl}
-                  placeholder="Year"
-                  required
-                />
-              </div>
-              <div className={styles.formGroup}>
-                <input
-                  type="text"
-                  id="rating"
-                  name="rating"
-                  className={styles.formControl}
-                  placeholder="Rating"
-                  required
-                />
-              </div>
-              {/* Other form fields... */}
-              <div className={styles.buttonContainer}>
-                <button className={styles.updateButton}>Update</button>
-                <button className={styles.closeButton} onClick={onClose}>
-                  Close
-                </button>
-              </div>
+                <div className={styles.formGroup}>
+                  <input
+                    type="text"
+                    id="year"
+                    name="published"
+                    className={styles.formControl}
+                    placeholder="Year"
+                    defaultValue={book.published}
+                  />
+                </div>
+                <div className={styles.formGroup}>
+                  <input
+                    type="text"
+                    id="rating"
+                    name="rating"
+                    className={styles.formControl}
+                    placeholder="Rating"
+                    defaultValue={book.rating}
+                  />
+                </div>
+                {/* Other form fields... */}
+                <div className={styles.buttonContainer}>
+                  <button type="submit" className={styles.updateButton}>Update</button>
+                  <button className={styles.closeButton} onClick={onClose}>
+                    Close
+                  </button>
+                </div>
             </form>
           </div>
         </div>

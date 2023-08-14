@@ -49,6 +49,7 @@
     border: 1px solid #ccc;
     border-radius: 5px;
     width: 95%;
+    outline: none;
 }
 
 .buttonContainer {
@@ -77,4 +78,30 @@
 .closeButton {
     background-color: #dc3545;
 }  
+.selectField {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 100%;
+    font-size: 14px;
+    outline:none;
+    margin-bottom: 10px;
+}
+
+.categorySelect {
+    display: block;
+    text-align: left;
+}
+
+.categorySelect p {
+    margin: 10px auto;
+    color: #808080;
+    font-size: 12px;
+}
+
+
+
+
   
+
+
