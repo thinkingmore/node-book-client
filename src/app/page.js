@@ -58,7 +58,7 @@ export default function Home () {
                   <h3>{book.title}</h3>
                   <p>By {book.author}</p>
                   <p><b>Category: </b>{book.genre}</p>
-                  <p><b>Published in: </b>{book.published}</p>
+                  <p><b>Published in: </b>{book?.year}</p>
                   <p><b>Rating</b> {book.rating}</p>
                 </div>
               </div>

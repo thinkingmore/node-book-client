@@ -1,45 +1,49 @@
 import { useState } from 'react';
 import styles from './EditModal.module.css'; 
 import validateForm from '@/utils/formValidator';
+import { Toast, toast } from 'react-hot-toast';
 
-function EditModal({ isOpen, onClose, genres, book,errors, setErrors }) {
+
+function EditModal({ isOpen, onClose, genres, book,errors, setErrors,mutate }) {
   const baseUrl = `${process.env.NEXT_PUBLIC_API_URL}/books`;
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    const body = {
-      title: e.target[0].value,
-      author: e.target[1].value,
-      genre: e.target[2].value,
-      published: e.target[3].value,
-      rating: e.target[4].value
-    }
-
-    // pass the updated data to form validator and send update request 
-    const validationErrors = validateForm(body);
-    if (Object.keys(validationErrors).length === 0) {
-      try {
-        const response = await fetch(`${baseUrl}/${book._id}`, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(body),
-        });
-
-        if (response.ok) {
-          console.log('Book data updated successfully');
-          onClose(); 
-        } else {
-          console.error('Failed to update book data');
-        }
-      } catch (error) {
-        console.error('Error occurred during API request:', error);
+      e.preventDefault();
+      const body = {
+        title: e.target[0].value,
+        author: e.target[1].value,
+        genre: e.target[2].value,
+        year: e.target[3].value,
+        rating: e.target[4].value
       }
-    } else {
-      setErrors(validationErrors);
-    }
-  };
+
+      // pass the updated data to form validator and send update request 
+      const validationErrors = validateForm(body);
+      if (Object.keys(validationErrors).length === 0) {
+        try {
+          const response = await fetch(`${baseUrl}/${book._id}`, {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(body),
+          });
+          console.log(response)
+
+          if (response.ok) {
+            toast.success('Book data updated successfully');
+            mutate()
+            onClose(); 
+          } else {
+            toast.error('Failed to update book data');
+          }
+        } catch (error) {
+            toast.error('Error occurred during API request:', error);
+        }
+      } else {
+        setErrors(validationErrors);
+      }
+    };
 
 
   return (
@@ -86,7 +90,7 @@ function EditModal({ isOpen, onClose, genres, book,errors, setErrors }) {
                 </div>
                 <div className={styles.formGroup}>
                   <div className={styles.error}>
-                    <p>{errors?.published}</p>
+                    <p>{errors?.year}</p>
                   </div>
                   <input
                     type="text"
@@ -94,7 +98,7 @@ function EditModal({ isOpen, onClose, genres, book,errors, setErrors }) {
                     name="published"
                     className={styles.formControl}
                     placeholder="Year"
-                    defaultValue={book.published}
+                    defaultValue={book.year}
                   />
                 </div>
                 <div className={styles.formGroup}>

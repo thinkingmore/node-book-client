@@ -21,7 +21,6 @@ const Dashboard = () => {
     const [selectedBook, setSelectedBook] = useState({});
     const [errors, setErrors] = useState({});
     const { searchText } = useSearch();
-    const router = useRouter()
 
     
     const baseUrl = `${process.env.NEXT_PUBLIC_API_URL}/books`
@@ -52,14 +51,14 @@ const Dashboard = () => {
       const imageFile = e.target[1].files[0];
       const author = e.target[2].value;
       const genre = e.target[3].value;
-      const publicationYear = e.target[4].value;
+      const year = e.target[4].value;
       const rating = e.target[5].value;
-    
+
       const validationErrors = validateForm({
         title,
         author,
         genre,
-        publicationYear,
+        year,
         rating,
       });
     
@@ -82,7 +81,7 @@ const Dashboard = () => {
               image: imageUrl,
               author,
               genre,
-              publicationYear,
+              year,
               rating,
             };
     
@@ -169,7 +168,7 @@ const Dashboard = () => {
                         <h3>{book.title}</h3>
                         <p>By {book.author}</p>
                         <p><b>Category: </b>{book.genre}</p>
-                        <p><b>Published in: </b>{book.published}</p>
+                        <p><b>Published in: </b>{book.year}</p>
                         <p><b>Rating</b> {book.rating}</p>
                     </div>
                     <div className={styles.bookCard__button}>
@@ -196,7 +195,8 @@ const Dashboard = () => {
                     isOpen={editModal} 
                     onClose={closeEditModal}
                     errors={errors}
-                    setErrors={setErrors} 
+                    setErrors={setErrors}
+                    mutate={mutate} 
                 />
                 <AddModal 
                     genres={data?.data?.genres} 

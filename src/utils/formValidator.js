@@ -1,5 +1,5 @@
 const validateForm = (formData) => {
-  const { title, author, published, rating } = formData;
+  const { title, author, year, rating } = formData;
   const errors = {};
 
   if (!title) {
@@ -10,8 +10,8 @@ const validateForm = (formData) => {
     errors.author = 'Author is required';
   }
 
-  if (!published || isNaN(published) || published > new Date().getFullYear()) {
-    errors.published = 'Invalid published year';
+  if (!year || isNaN(year) || year > new Date().getFullYear()) {
+    errors.year = 'Invalid year';
   }
 
   if (!rating || isNaN(rating) || rating < 1 || rating > 10) {
