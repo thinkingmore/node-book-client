@@ -99,6 +99,13 @@
     font-size: 12px;
 }
 
+.error {
+    color: red;
+    text-align: left;
+    font-size: 12px;
+    margin: 10px 0px;
+}
+
 
 
 

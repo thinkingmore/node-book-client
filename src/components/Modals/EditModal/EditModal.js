@@ -2,8 +2,7 @@ import { useState } from 'react';
 import styles from './EditModal.module.css'; 
 import validateForm from '@/utils/formValidator';
 
-function EditModal({ isOpen, onClose, genres, book }) {
-  const [errors, setErrors] = useState({});
+function EditModal({ isOpen, onClose, genres, book,errors, setErrors }) {
   const baseUrl = `${process.env.NEXT_PUBLIC_API_URL}/books`;
 
   const handleSubmit = async (e) => {
@@ -39,9 +38,9 @@ function EditModal({ isOpen, onClose, genres, book }) {
       }
     } else {
       setErrors(validationErrors);
-      console.log('Form validation errors:', validationErrors);
     }
   };
+
 
   return (
     <div className={styles.container}>
@@ -49,6 +48,9 @@ function EditModal({ isOpen, onClose, genres, book }) {
         <div className={styles.modal}>
           <div className={styles.modalContent}>
             <form onSubmit={handleSubmit} id="modalEditForm" className={styles.formContainer}>
+                <div className={styles.error}>
+                  <p>{errors?.title}</p>
+                </div>
                 <div className={styles.formGroup}>
                   <input
                     type="text"
@@ -58,8 +60,12 @@ function EditModal({ isOpen, onClose, genres, book }) {
                     placeholder="Title"
                     defaultValue={book.title}
                   />
+                  
                 </div>
                 <div className={styles.formGroup}>
+                <div className={styles.error}>
+                  <p>{errors?.author}</p>
+                </div>
                   <input
                     type="text"
                     id="author"
@@ -79,6 +85,9 @@ function EditModal({ isOpen, onClose, genres, book }) {
                   </select>
                 </div>
                 <div className={styles.formGroup}>
+                  <div className={styles.error}>
+                    <p>{errors?.published}</p>
+                  </div>
                   <input
                     type="text"
                     id="year"
@@ -89,6 +98,9 @@ function EditModal({ isOpen, onClose, genres, book }) {
                   />
                 </div>
                 <div className={styles.formGroup}>
+                  <div className={styles.error}>
+                    <p>{errors?.rating}</p>
+                  </div>
                   <input
                     type="text"
                     id="rating"

@@ -1,7 +1,7 @@
 "use client"
 import React from 'react';
 import styles from './page.module.css'
-import useSWR,{ useSWRConfig } from 'swr'
+import useSWR from 'swr'
 import Pagination from '@/components/Pagination/Pagination';
 import EditModal from '@/components/Modals/EditModal/EditModal';
 import AddModal from '@/components/Modals/AddModal/AddModal';
@@ -9,7 +9,10 @@ import { useState } from 'react';
 import { useSearch } from '@/context/search/SearchContext';
 import Image from 'next/image'
 import { useRouter } from 'next/navigation';
+import toast, { Toaster } from 'react-hot-toast';
 import validateForm from '@/utils/formValidator';
+
+
 
 const Dashboard = () => {
     const [ currentPage, setCurrentPage ] = useState("")
@@ -20,11 +23,14 @@ const Dashboard = () => {
     const { searchText } = useSearch();
     const router = useRouter()
 
-    const fetcher = (...args) => fetch(...args).then((res) => res.json())
+    
     const baseUrl = `${process.env.NEXT_PUBLIC_API_URL}/books`
     const booksUrl = `${baseUrl}?page=${currentPage}&search=${searchText}`;
     const imgBBKey= process.env.NEXT_PUBLIC_IMGBB_API_KEY;
-    const { data, error } = useSWR(booksUrl, fetcher)
+
+    // fetch books
+    const fetcher = (...args) => fetch(...args).then((res) => res.json())
+    const { data, error, mutate } = useSWR(booksUrl, fetcher)
  
     if (error) return <div>Failed to load</div>
     if (!data) return <div>Loading...</div>
@@ -36,55 +42,81 @@ const Dashboard = () => {
 
     const closeAddModal = () => {
       setAddModal(false);
+      setErrors("")
     };
 
     const handleSubmit = async (e) => {
-      e.preventDefault();   
-      const imageData = new FormData();
-      imageData.append('image', e.target[1].files[0]);
+      e.preventDefault();
+      
+      const title = e.target[0].value;
+      const imageFile = e.target[1].files[0];
+      const author = e.target[2].value;
+      const genre = e.target[3].value;
+      const publicationYear = e.target[4].value;
+      const rating = e.target[5].value;
     
-      try {
-        const imgbbResponse = await fetch(`https://api.imgbb.com/1/upload?key=${imgBBKey}`, {
-          method: 'POST',
-          body: imageData,
-        });  
+      const validationErrors = validateForm({
+        title,
+        author,
+        genre,
+        publicationYear,
+        rating,
+      });
     
-        if (imgbbResponse.ok) {
-          const imgbbData = await imgbbResponse.json();
-          const imageUrl = imgbbData.data.url;
+      if (Object.keys(validationErrors).length === 0) {
+        const imageData = new FormData();
+        imageData.append('image', imageFile);
     
-          const bookData = {
-            title: e.target[0].value,
-            image: imageUrl,  
-            author: e.target[2].value,
-            genre: e.target[3].value,
-            publicationYear: e.target[4].value,
-            rating: e.target[5].value,
-          };
-    
-          const createBookResponse = await fetch(baseUrl, {
+        try {
+          const imgbbResponse = await fetch(`https://api.imgbb.com/1/upload?key=${imgBBKey}`, {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(bookData),
+            body: imageData,
           });
     
-          if (createBookResponse.ok) {
-            router.refresh()
-            closeAddModal()
-            console.log('Book created successfully');
+          if (imgbbResponse.ok) {
+            const imgbbData = await imgbbResponse.json();
+            const imageUrl = imgbbData.data.url;
+    
+            const bookData = {
+              title,
+              image: imageUrl,
+              author,
+              genre,
+              publicationYear,
+              rating,
+            };
+    
+            try {
+              const createBookResponse = await fetch(baseUrl, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(bookData),
+              });
+    
+              if (createBookResponse.ok) {
+                closeAddModal();
+                mutate();
+                toast.success('Book created successfully');
+              } else {
+                setErrors('Failed to create book');
+              }
+            } catch (error) {
+              setErrors('An error occurred while creating the book');
+            }
           } else {
-            console.error('Failed to create book');
+            setErrors('Image upload failed');
           }
-        } else {
-          console.error('Image upload failed');
+        } catch (error) {
+          setErrors('An error occurred during image upload');
         }
-      } catch (error) {
-        console.error('An error occurred:', error);
+      } else {
+        // Handle validation errors
+        setErrors(validationErrors);
       }
-      
-  };
+    };
+    
 
     // Edit modal function
     const openEditModal = (book) => {
@@ -94,6 +126,7 @@ const Dashboard = () => {
     
     const closeEditModal = () => {
         setEditModal(false);
+        setErrors("")
     };
 
     // Handle delete 
@@ -104,13 +137,13 @@ const Dashboard = () => {
           });
     
           if (response.ok) {
-            router.refresh()
-            console.log('Book deleted successfully');    
+            mutate()
+            toast.success('Book deleted successfully');    
           } else {
-            console.error('Failed to delete book');
+            setErrors('Failed to delete book');
           }
         } catch (error) {
-          console.error('Error occurred during delete request:', error);
+          setErrors('Error occurred during delete request:', error);
         }
       };
 
@@ -161,15 +194,19 @@ const Dashboard = () => {
                     genres={data?.data?.genres} 
                     book={selectedBook} 
                     isOpen={editModal} 
-                    onClose={closeEditModal} 
+                    onClose={closeEditModal}
+                    errors={errors}
+                    setErrors={setErrors} 
                 />
                 <AddModal 
                     genres={data?.data?.genres} 
                     isOpen={addModal} 
                     onClose={closeAddModal}
-                    handleSubmit={handleSubmit} 
+                    handleSubmit={handleSubmit}
+                    errors={errors} 
                 />
             </div>
+            <Toaster />
         </div>
     );
 };

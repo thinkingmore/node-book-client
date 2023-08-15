@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import styles from './AddModal.module.css'; 
 
-function AddModal({ isOpen, onClose, genres, handleSubmit}) {
+function AddModal({ isOpen, onClose, genres, handleSubmit,errors}) {
 
 
   return (
@@ -11,6 +11,9 @@ function AddModal({ isOpen, onClose, genres, handleSubmit}) {
           <div className={styles.modalContent}>
             <form onSubmit={handleSubmit} id="modalEditForm" className={styles.formContainer}>
                 <div className={styles.formGroup}>
+                  <div className={styles.error}>
+                    <p>{errors?.title}</p>
+                  </div>
                   <input
                     type="text"
                     id="title"
@@ -29,6 +32,9 @@ function AddModal({ isOpen, onClose, genres, handleSubmit}) {
                   />
                 </div>
                 <div className={styles.formGroup}>
+                  <div className={styles.error}>
+                    <p>{errors?.author}</p>
+                  </div>
                   <input
                     type="text"
                     id="author"
@@ -47,6 +53,9 @@ function AddModal({ isOpen, onClose, genres, handleSubmit}) {
                   </select>
                 </div>
                 <div className={styles.formGroup}>
+                  <div className={styles.error}>
+                    <p>{errors?.published}</p>
+                  </div>
                   <input
                     type="text"
                     id="year"
@@ -56,6 +65,9 @@ function AddModal({ isOpen, onClose, genres, handleSubmit}) {
                   />
                 </div>
                 <div className={styles.formGroup}>
+                  <div className={styles.error}>
+                    <p>{errors?.rating}</p>
+                  </div>
                   <input
                     type="text"
                     id="rating"
