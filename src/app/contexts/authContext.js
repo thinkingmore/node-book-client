@@ -5,6 +5,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const[user,setUser] = useState(null)
+  const [loading,setLoading] = useState(true);
 
   // Function to get the user from the cookie
   const getUserFromCookie = () => {
@@ -12,16 +13,16 @@ export const AuthProvider = ({ children }) => {
     if (userCookie) {
       setUser(JSON.parse(userCookie));
     }
+    setLoading(false); // 
   };
 
   useEffect(() => {
     getUserFromCookie();
-  }, []); 
+  }, []);
   
-  const [isLoading, setIsLoading] = useState(true);
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, setIsLoading }}>
+    <AuthContext.Provider value={{ user, loading, setUser }}>
       {children}
     </AuthContext.Provider>
   );

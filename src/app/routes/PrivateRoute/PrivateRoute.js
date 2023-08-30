@@ -1,17 +1,17 @@
-import { useAuth } from '@/app/contexts/authContext';
 import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+import { useAuth } from '../../contexts/authContext';
 
 const PrivateRoute = ({ children }) => {
-  const { user } = useAuth();
   const router = useRouter();
+  const { user, loading } = useAuth();
+  
 
-  // Redirect to the login page if the user is not authenticated
-  if (!user) {
+  if (user == null && !loading) {
     router.push('/accounts/login');
     return null;
   }
-
-  // If the user is authenticated, render the child components
+  
   return children;
 };
 

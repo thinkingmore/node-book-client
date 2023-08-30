@@ -1,12 +1,23 @@
 "use client"
-import React, { useState } from 'react';
+import React from 'react';
 import styles from './navbar.module.css'; 
-import Image from 'next/image';
+import { removeSessionCookie } from '@/utils/session'; 
 import { useSearch } from '../../app/contexts/SearchContext';
+import { useAuth } from '@/app/contexts/authContext';
+import { useRouter } from 'next/navigation';
 
 
 const Navbar = () => {
   const { handleSearch } = useSearch();
+  const { user, setUser } = useAuth();
+  const router = useRouter();
+  
+  // handle logout
+  const logout = () => {
+    setUser(null);
+    removeSessionCookie('book-review-user');
+    router.push('/accounts/login')
+  }
 
   const setSearchQuery = (e) => {
     const searchBar = document.getElementById("searchBar")
@@ -14,6 +25,7 @@ const Navbar = () => {
     const searchQuery = searchBar.value;
     handleSearch(searchQuery);
   }
+
   return (
     <nav className={styles.header}>
         <div className={styles.navbar}>
@@ -25,9 +37,12 @@ const Navbar = () => {
               <button onClick={setSearchQuery} type="submit" className={styles.searchButton}>
                 Search
               </button>
-            <button type="submit" className={styles.loginButton}>
-              Login
-            </button>
+              <button onClick={logout} type="submit" className={styles.loginButton}>
+                {
+                  user?
+                  "Logout" : "Login"
+                }
+              </button>
             </div>
         </div>
     </nav>

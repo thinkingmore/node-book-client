@@ -3,12 +3,13 @@ import { useState } from 'react';
 import { toast } from 'react-hot-toast';
 import styles from './page.module.css';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/app/contexts/authContext';
 import { setSessionCookie } from '@/utils/session';
 import Link from 'next/link';
+import { useAuth } from '@/app/contexts/authContext';
 
 export default function Login() { 
 
+  const { user, setUser } = useAuth();
   const router = useRouter();
   const [formData, setFormData] = useState({
     email: '',
@@ -41,6 +42,7 @@ export default function Login() {
       });
       if (response.status === 201) {
             const data = await response.json(); 
+            setUser(data.user);
             setSessionCookie('book-review-user', JSON.stringify(data.user), 3600);
             router.push("/dashboard")
       } else {
@@ -75,6 +77,7 @@ export default function Login() {
           <button className={styles.submit} type="submit">Submit</button>
           <div className={styles.text}>
             <span>Do not have an account?</span>
+            <Link className={styles.link} href="/accounts/signup">Signup</Link>
           </div>
         </div>
       </form>
