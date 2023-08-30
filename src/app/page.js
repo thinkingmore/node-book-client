@@ -5,7 +5,7 @@ import useSWR from 'swr'
 import Pagination from '@/components/Pagination/Pagination';
 import { useState } from 'react';
 import Genre from '@/components/Genre/Genre';
-import { useSearch } from '@/context/search/SearchContext';
+import { useSearch } from '@/app/contexts/SearchContext';
 
 const fetcher = async (urls) => {
   const responses = await Promise.all(urls.map(url => fetch(url)));

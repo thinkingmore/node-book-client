@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import styles from './navbar.module.css'; 
 import Image from 'next/image';
-import { useSearch } from '../../context/search/SearchContext';
+import { useSearch } from '../../app/contexts/SearchContext';
 
 
 const Navbar = () => {

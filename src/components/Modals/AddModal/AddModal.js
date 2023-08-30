@@ -78,7 +78,7 @@ function AddModal({ isOpen, onClose, genres, handleSubmit,errors}) {
                 </div>
                 {/* Other form fields... */}
                 <div className={styles.buttonContainer}>
-                  <button type="submit" className={styles.updateButton}>Update</button>
+                  <button type="submit" className={styles.updateButton}>Add</button>
                   <button className={styles.closeButton} onClick={onClose}>
                     Close
                   </button>

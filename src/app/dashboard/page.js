@@ -6,15 +6,17 @@ import Pagination from '@/components/Pagination/Pagination';
 import EditModal from '@/components/Modals/EditModal/EditModal';
 import AddModal from '@/components/Modals/AddModal/AddModal';
 import { useState } from 'react';
-import { useSearch } from '@/context/search/SearchContext';
+import { useSearch } from '@/app/contexts/SearchContext';
 import Image from 'next/image'
-import { useRouter } from 'next/navigation';
 import toast, { Toaster } from 'react-hot-toast';
 import validateForm from '@/utils/formValidator';
+import { useAuth } from '../contexts/authContext';
+import PrivateRoute from '../routes/PrivateRoute/PrivateRoute';
 
 
 
 const Dashboard = () => {
+    const { user } = useAuth();
     const [ currentPage, setCurrentPage ] = useState("")
     const [editModal, setEditModal] = useState(false);
     const [addModal, setAddModal] = useState(false);
@@ -152,7 +154,9 @@ const Dashboard = () => {
     }
 
     return (
-        <div className={styles.container}>
+        <PrivateRoute>
+          <div className={styles.container}>
+            <h3>Hello, {user?.username}</h3>
             <div className={styles.addBook}>
               <button onClick={openAddModal} className={styles.addButton}>
                   Add a book
@@ -207,7 +211,8 @@ const Dashboard = () => {
                 />
             </div>
             <Toaster />
-        </div>
+          </div>
+        </PrivateRoute>
     );
 };
 
