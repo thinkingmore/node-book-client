@@ -84,7 +84,7 @@ function EditModal({ isOpen, onClose, genres, book,errors, setErrors,mutate }) {
                   <select defaultValue={book.genre} name="genre" className={styles.selectField}>
                     { 
                       genres.map((gen,i)=>
-                      <option key={i}>{gen}</option>
+                      <option key={i}>{gen.name}</option>
                     )}
                   </select>
                 </div>

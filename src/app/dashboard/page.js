@@ -1,5 +1,5 @@
 "use client"
-import React, { Children } from 'react';
+import React, { Children, useEffect } from 'react';
 import styles from './page.module.css'
 import useSWR from 'swr'
 import Pagination from '@/components/Pagination/Pagination';
@@ -16,6 +16,7 @@ import { useAuth } from '../contexts/authContext';
 
 const Dashboard = () => {
     const [ currentPage, setCurrentPage ] = useState("")
+    const [ genres, setGenres ] = useState([])
     const [editModal, setEditModal] = useState(false);
     const [addModal, setAddModal] = useState(false);
     const [selectedBook, setSelectedBook] = useState({});
@@ -23,17 +24,25 @@ const Dashboard = () => {
     const { searchText } = useSearch();
     const { user } = useAuth(); 
     
-    const baseUrl = `${process.env.NEXT_PUBLIC_API_URL}/books`
+    const baseUrl = `${process.env.NEXT_PUBLIC_API_URL}/books/${user?.username}`
+    const postUrl = `${process.env.NEXT_PUBLIC_API_URL}/books/`
     const booksUrl = `${baseUrl}?page=${currentPage}&search=${searchText}`;
     const imgBBKey= process.env.NEXT_PUBLIC_IMGBB_API_KEY;
 
     // fetch books
     const fetcher = (...args) => fetch(...args).then((res) => res.json())
     const { data, error, mutate } = useSWR(booksUrl, fetcher)
- 
+
+    useEffect(()=>{
+      fetch("http://localhost:5000/api/v1/genres")
+      .then(res=>res.json())
+      .then(data=>setGenres(data?.data))
+    },[])
+
+
+
     if (error) return <div>Failed to load</div>
     if (!data) return <div>Loading...</div>
-
 
     // Add modal function
     const openAddModal = (book) => {
@@ -84,17 +93,19 @@ const Dashboard = () => {
               genre,
               year,
               rating,
+              user: user?.username,
             };
-    
+
             try {
-              const createBookResponse = await fetch(baseUrl, {
+              const createBookResponse = await fetch(postUrl, {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(bookData),
+                
               });
-    
+
               if (createBookResponse.ok) {
                 closeAddModal();
                 mutate();
@@ -162,7 +173,7 @@ const Dashboard = () => {
                 </button>
               </div>
               <div className={styles.bookItems}>
-              { data && data.data?.books.map(book=>(
+              { data && data.map(book=>(
                   <div key={book._id}  className={styles.bookCard}>
                       <div className={styles.bookCard__image}>
                       <Image width={200} height={313} className={styles.img} src={book.image}  alt="book" />
@@ -193,7 +204,7 @@ const Dashboard = () => {
                       />
                   </div>
                   <EditModal 
-                      genres={data?.data?.genres} 
+                      genres={genres} 
                       book={selectedBook} 
                       isOpen={editModal} 
                       onClose={closeEditModal}
@@ -202,7 +213,7 @@ const Dashboard = () => {
                       mutate={mutate} 
                   />
                   <AddModal 
-                      genres={data?.data?.genres} 
+                      genres={genres} 
                       isOpen={addModal} 
                       onClose={closeAddModal}
                       handleSubmit={handleSubmit}

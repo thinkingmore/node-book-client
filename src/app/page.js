@@ -63,6 +63,11 @@ export default function Home () {
                 </div>
               </div>
           ))}
+          {
+            data && data[1].data?.books.length < 1 ?(
+            <p>No book found with this category</p>
+            ) : ""
+          }
           <div className={styles.pageItems}>
             <Pagination 
               page={data?.data?.page}

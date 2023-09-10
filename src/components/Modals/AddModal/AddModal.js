@@ -48,7 +48,7 @@ function AddModal({ isOpen, onClose, genres, handleSubmit,errors}) {
                   <select name="genre" className={styles.selectField}>
                     { 
                       genres.map((gen,i)=>
-                      <option key={i}>{gen}</option>
+                      <option key={i}>{gen.name}</option>
                     )}
                   </select>
                 </div>
